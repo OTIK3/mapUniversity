@@ -1,9 +1,11 @@
 package tvgu.tversu.map.mapUniversity.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
-import jdk.jshell.Snippet;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,22 +16,21 @@ import java.nio.file.Files;
 
 @RestController()
 @RequestMapping("/v1/map")
+@RequiredArgsConstructor
+@Slf4j
 public class MainController {
-    @Autowired
-    private MainService service;
 
-    @PostMapping("/number")
-    public ResponseEntity<byte[]> getWayBySvg(@RequestBody Integer numberRoom){
+    private final MainService service;
+
+    @PostMapping("/get/{number}")
+    public ResponseEntity<byte[]> getWayBySvg(@PathVariable("number") Integer numberRoom){
+        log.info("Получение карты svg по {}", numberRoom);
         return new ResponseEntity<>(service.getSvgBytes(numberRoom), HttpStatus.OK);
     }
 
-    @GetMapping("/svg")
-    @SneakyThrows
-    public void getSvgImage(HttpServletResponse response){
-        var imageUrl = "testPng" + ".svg";
-        File file = new File("testPng.svg");
-        response.setContentType("image/svg+xml");
-        response.setHeader("Content-Disposition", "inline; filename=\"" + imageUrl);
-        response.getOutputStream().write(Files.readAllBytes(file.toPath()));
+    @PutMapping("/insertSvg")
+    public HttpStatus insertSvg(@RequestBody String path){
+        log.info("Внесение svg по path = {}", path);
+        return service.insertSvg(path) != null? HttpStatus.OK : HttpStatus.BAD_REQUEST;
     }
 }
