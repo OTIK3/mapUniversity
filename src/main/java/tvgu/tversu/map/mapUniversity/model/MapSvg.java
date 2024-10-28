@@ -1,4 +1,4 @@
-package tvgu.tversu.map.mapUniversity.main;
+package tvgu.tversu.map.mapUniversity.model;
 
 import jakarta.persistence.*;
 import lombok.*;
